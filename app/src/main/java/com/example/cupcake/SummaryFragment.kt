@@ -21,7 +21,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.cupcake.databinding.FragmentSummaryBinding
+import com.example.cupcake.model.OrderViewModel
 
 /**
  * [SummaryFragment] contains a summary of the order details with a button to share the order
@@ -33,6 +36,7 @@ class SummaryFragment : Fragment() {
     // This property is non-null between the onCreateView() and onDestroyView() lifecycle callbacks,
     // when the view hierarchy is attached to the fragment.
     private var binding: FragmentSummaryBinding? = null
+    private val sharedViewModel: OrderViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,12 +46,17 @@ class SummaryFragment : Fragment() {
         binding = fragmentBinding
         return fragmentBinding.root
     }
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding?.apply {
             sendButton.setOnClickListener { sendOrder() }
+            viewModel = sharedViewModel
+            lifecycleOwner = viewLifecycleOwner
         }
     }
 
@@ -55,7 +64,7 @@ class SummaryFragment : Fragment() {
      * Submit the order by sharing out the order details to another app via an implicit intent.
      */
     fun sendOrder() {
-        Toast.makeText(activity, "Send Order", Toast.LENGTH_SHORT).show()
+        findNavController().navigate(R.id.action_summaryFragment_to_startFragment)
     }
 
     /**
